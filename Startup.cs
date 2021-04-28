@@ -1,5 +1,7 @@
+using CodeSample.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,6 +24,8 @@ namespace CodeSample
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connection = Configuration.GetConnectionString("ExampleDBConnection");
+            services.AddDbContext<ExampleDBContext>(Options => Options.UseSqlServer(connection));            
             services.AddControllersWithViews();
         }
 
