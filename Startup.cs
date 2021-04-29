@@ -1,4 +1,5 @@
 using CodeSample.Models;
+using CodeSample.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -25,8 +26,9 @@ namespace CodeSample
         public void ConfigureServices(IServiceCollection services)
         {
             var connection = Configuration.GetConnectionString("ExampleDBConnection");
-            services.AddDbContext<ExampleDBContext>(Options => Options.UseSqlServer(connection));            
-            services.AddControllersWithViews();
+            services.AddDbContext<ExampleDBContext>(Options => Options.UseSqlServer(connection));
+            services.AddScoped<IRepository<Employee>,Repository<Employee>>();
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,10 +50,13 @@ namespace CodeSample
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                //endpoints.MapControllerRoute(
+                //    name: "default",
+                //    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapDefaultControllerRoute();
             });
         }
+  
     }
 }

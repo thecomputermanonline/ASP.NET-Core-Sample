@@ -1,0 +1,52 @@
+﻿@model IEnumerable<CodeSample.Models.Employee>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+<div class="container">
+
+    <h2>Employee List</h2>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model == null)
+            {
+                <tr><td colspan="4" align="center">No Data Found</td></tr>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.EmpName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Phone)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Address)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                        @*<td>
+                                <a id="editCustomerModal" data-toggle="modal" asp-action="AddEditCustomer" asp-route-id="@item.Id" data-target="#modal-action-customer"
+                                   class="btn btn-info">
+                                    <i class="glyphicon glyphicon-pencil"></i>  Edit
+                                </a>
+                                <a id="deleteCustomerModal" data-toggle="modal" asp-action="DeleteCustomer" asp-route-id="@item.Id" data-target="#modal-action-customer" class="btn btn-danger">
+                                    <i class="glyphicon glyphicon-trash"></i>  Delete
+                                </a>
+                            </td>*@
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>   
+
+</div>
