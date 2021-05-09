@@ -16,11 +16,14 @@ namespace CodeSample.Repository
             _dbContext = dbContext;
             _dbSet = dbContext.Set<TEntity>();
         }
-        public void Add(TEntity entity)
+        public async Task<int> Add(TEntity entity)
         {
-            throw new NotImplementedException();
+            int output = 0;
+            _dbSet.Add(entity);
+            output= _dbContext.SaveChanges();
+            return output;
         }
-        public void Delete(TEntity entity)
+        public int Delete(TEntity entity)
         {
             throw new NotImplementedException();
         }
@@ -32,7 +35,7 @@ namespace CodeSample.Repository
         {           
             return _dbSet.ToList();
         }
-        public void Update(TEntity entity)
+        public int Update(TEntity entity)
         {
             throw new NotImplementedException();
         }
