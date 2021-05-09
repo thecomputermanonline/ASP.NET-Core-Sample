@@ -9,8 +9,8 @@ namespace CodeSample.Repository
     {
         IEnumerable<TEntity> GetAll();
         TEntity Get(long id);
-        void Add(TEntity entity);
-        void Update(TEntity entity);
-        void Delete(TEntity entity);
+        Task<int> Add(TEntity entity);
+        int Update(TEntity entity);
+        int Delete(TEntity entity);
     }
 }

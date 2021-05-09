@@ -6,6 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CodeSample.Enums;
+using CodeSample.Services;
+
 
 namespace CodeSample.Controllers
 {
@@ -21,7 +24,6 @@ namespace CodeSample.Controllers
         public ActionResult Index()
         {
             var data = _empRepo.GetAll();
-
             return View(data);
         }
 
@@ -33,18 +35,41 @@ namespace CodeSample.Controllers
 
         // GET: EmployeeController/Create
         public ActionResult Create()
-        {
-            return View();
+        {          
+            return PartialView("_Create");
         }
 
         // POST: EmployeeController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create([FromForm] EmployeeViewModel collection)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                int result = 0;
+                if (ModelState.IsValid)
+                {                   
+                        Employee objEmp = new Employee();
+                        objEmp.EmpName = collection.EmpName;
+                        objEmp.Address = collection.Address;
+                        objEmp.Email = collection.Email;
+                        objEmp.Phone = collection.Phone;
+                        objEmp.BankAccountNo = collection.BankAccountNo;
+                        objEmp.CreatedOn = DateTime.Now;
+                        objEmp.CreatedBy = "SYSTEM";
+                        objEmp.ModifiedOn = null;
+                        objEmp.ModifiedBy = null;
+                        result = _empRepo.Add(objEmp).Result;
+                        //return RedirectToAction("Index");
+                        if (result > 0)
+                        {
+                          ViewBag.Alert = CommonServices.ShowAlert(Alerts.Success, "Employee added");
+                        }
+                        else
+                            ViewBag.Alert = CommonServices.ShowAlert(Alerts.Danger, "Unknown error");
+
+                }
+                return PartialView("_Create");
             }
             catch
             {
@@ -93,5 +118,6 @@ namespace CodeSample.Controllers
                 return View();
             }
         }
+    
     }
 }
