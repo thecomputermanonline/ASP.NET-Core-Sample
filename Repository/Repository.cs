@@ -20,7 +20,7 @@ namespace CodeSample.Repository
         {
             int output = 0;
             _dbSet.Add(entity);
-            output= _dbContext.SaveChanges();
+            output=await _dbContext.SaveChangesAsync();
             return output;
         }
         public int Delete(TEntity entity)
