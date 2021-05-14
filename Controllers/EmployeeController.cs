@@ -21,20 +21,16 @@ namespace CodeSample.Controllers
         }
 
         // GET: EmployeeController
-        public ActionResult Index()
+        public async Task< ActionResult> Index(string? alert)
         {
-            var data = _empRepo.GetAll();
+            var data =await _empRepo.GetAll();
+            ViewBag.Alert=alert;
             return View(data);
-        }
-
-        // GET: EmployeeController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
+        }     
 
         // GET: EmployeeController/Create
-        public ActionResult Create()
+        #pragma warning disable CS1998 //Async method lacks 'await' operators and will run synchronously
+        public async Task<ActionResult> Create()
         {          
             return PartialView("_Create");
         }
@@ -42,7 +38,7 @@ namespace CodeSample.Controllers
         // POST: EmployeeController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([FromForm] EmployeeViewModel collection)
+        public async Task<ActionResult> Create([FromForm] EmployeeViewModel collection)
         {
             try
             {
@@ -59,7 +55,8 @@ namespace CodeSample.Controllers
                         objEmp.CreatedBy = "SYSTEM";
                         objEmp.ModifiedOn = null;
                         objEmp.ModifiedBy = null;
-                        result = _empRepo.Add(objEmp).Result;
+                        objEmp.IsDeleted = false;
+                        result =await _empRepo.Add(objEmp);
                         //return RedirectToAction("Index");
                         if (result > 0)
                         {
@@ -78,19 +75,56 @@ namespace CodeSample.Controllers
         }
 
         // GET: EmployeeController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task< ActionResult> Edit(int id)
         {
-            return View();
+            EmployeeViewModel objViewModel = new EmployeeViewModel();
+            Employee objEmp = new Employee();
+            if (id > 0) {
+                objEmp =await _empRepo.Get(id);              
+                objViewModel.EmpName = objEmp.EmpName;
+                objViewModel.Address = objEmp.Address;
+                objViewModel.Email = objEmp.Email;
+                objViewModel.Phone = objEmp.Phone;
+                objViewModel.BankAccountNo = objEmp.BankAccountNo;
+                objViewModel.EmpId = objEmp.EmpId;                                
+            }
+            return PartialView("_Edit", objViewModel);            
         }
 
         // POST: EmployeeController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit([FromForm] EmployeeViewModel collection)
         {
             try
-            {
-                return RedirectToAction(nameof(Index));
+            {             
+                int result = 0;
+                if (ModelState.IsValid)
+                {
+                    Employee objEmp = new Employee();
+                    objEmp.EmpId =(int) collection.EmpId;
+                    objEmp.EmpName = collection.EmpName;
+                    objEmp.Address = collection.Address;
+                    objEmp.Email = collection.Email;
+                    objEmp.Phone = collection.Phone;
+                    objEmp.BankAccountNo = collection.BankAccountNo;                 
+                    objEmp.ModifiedOn = DateTime.Now;
+                    objEmp.ModifiedBy = "SYSTEM";
+                    objEmp.IsDeleted = false;
+                    result =await _empRepo.Update(objEmp);                  
+                    if (result > 0)
+                    {
+                        ViewBag.Alert = CommonServices.ShowAlert(Alerts.Success, "Record updated");
+                    }
+                    else
+                        ViewBag.Alert = CommonServices.ShowAlert(Alerts.Danger, "Unknown error");
+
+                    return RedirectToAction(nameof(Index), new { alert = ViewBag.Alert });
+                } 
+                else
+                    ViewBag.Alert = CommonServices.ShowAlert(Alerts.Danger, "There is something wrong");
+                               
+                return RedirectToAction(nameof(Index), new { alert = ViewBag.Alert });
             }
             catch
             {
@@ -99,25 +133,49 @@ namespace CodeSample.Controllers
         }
 
         // GET: EmployeeController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            return View();
+            Employee objEmp = new Employee();
+            EmployeeViewModel objViewModel = new EmployeeViewModel();
+            if (id > 0)
+            {
+                objEmp = await _empRepo.Get(id);
+                objViewModel.EmpName = objEmp.EmpName;
+            }
+            return PartialView("_Delete", objViewModel);
         }
 
         // POST: EmployeeController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> Delete(int id, EmployeeViewModel collection)
         {
+            int result = 0;
+            Employee objEmp = new Employee();
+            EmployeeViewModel objViewModel = new EmployeeViewModel();
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (id> 0)
+                {
+                    objEmp = await _empRepo.Get(id);
+                    if (!objEmp.IsDeleted)
+                    {
+                        result = await _empRepo.Delete(objEmp);
+                        if (result > 0)
+                        {
+                            ViewBag.Alert = CommonServices.ShowAlert(Alerts.Success, "Record Deleted");
+                        }
+                        else
+                            ViewBag.Alert = CommonServices.ShowAlert(Alerts.Danger, "Unknown error");
+                    }
+                }               
+                return RedirectToAction(nameof(Index), new { alert = ViewBag.Alert });              
             }
-            catch
+            catch (Exception ex)
             {
                 return View();
             }
         }
-    
+
     }
 }

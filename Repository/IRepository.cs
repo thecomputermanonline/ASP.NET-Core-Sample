@@ -7,10 +7,10 @@ namespace CodeSample.Repository
 {
     public interface IRepository<TEntity>
     {
-        IEnumerable<TEntity> GetAll();
-        TEntity Get(long id);
+        Task<IEnumerable<TEntity>> GetAll();
+        Task<TEntity> Get(int id);
         Task<int> Add(TEntity entity);
-        int Update(TEntity entity);
-        int Delete(TEntity entity);
+        Task<int> Update(TEntity entity);
+        Task<int> Delete(TEntity entity);
     }
 }
