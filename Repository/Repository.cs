@@ -16,6 +16,16 @@ namespace CodeSample.Repository
             _dbContext = dbContext;
             _dbSet = dbContext.Set<TEntity>();
         }
+
+        public async Task<IEnumerable<TEntity>> GetAll()
+        {
+            return await _dbSet.ToListAsync();
+        }
+
+        public async Task<TEntity> Get(int id)
+        {
+            return await _dbSet.FindAsync(id);
+        }
         public async Task<int> Add(TEntity entity)
         {
             int output = 0;
@@ -23,21 +33,21 @@ namespace CodeSample.Repository
             output=await _dbContext.SaveChangesAsync();
             return output;
         }
-        public int Delete(TEntity entity)
+                     
+        public async Task<int> Update(TEntity entity)
         {
-            throw new NotImplementedException();
+            int output = 0;
+            _dbSet.Update(entity);
+            output = await _dbContext.SaveChangesAsync();
+            return output;
         }
-        public TEntity Get(long id)
+
+        public async Task<int> Delete(TEntity entity)
         {
-            throw new NotImplementedException();
-        }
-        public IEnumerable<TEntity> GetAll()
-        {           
-            return _dbSet.ToList();
-        }
-        public int Update(TEntity entity)
-        {
-            throw new NotImplementedException();
+            int output = 0;
+            _dbSet.Remove(entity);
+            output = await _dbContext.SaveChangesAsync();
+            return output;
         }
     }
 }
