@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CodeSample.Enums;
+using CodeSample.Models;
 
 namespace CodeSample.Services
 {
@@ -29,7 +30,6 @@ namespace CodeSample.Services
             }
             
             return alertDiv;
-        }
-
+        }       
     }
 }
